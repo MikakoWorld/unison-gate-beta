@@ -1,0 +1,14 @@
+# Jekyll build output
+_site/
+docs/_site/
+
+# Jekyll cache
+.jekyll-cache/
+--watch/
+
+# macOS
+.DS_Store
+
+# User notes
+1004.txt
+memo/
