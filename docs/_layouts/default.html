@@ -38,11 +38,11 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: url('{{ "/img/rina_rainbow.png" | relative_url }}');
       background-repeat: no-repeat;
       background-attachment: scroll;
-      background-position: right top;
-      background-size: contain;
+      opacity: 0.25;
+      background-position: center top;
+      background-size: auto;
     }
 
     /* サイト共通のヘッダー */
@@ -80,13 +80,37 @@
       margin: 0 auto;   /* 画面の中央に配置 */
       padding: 2em 1em;
     }
+
+    @media (min-width: 1200px) {
+      .background-holder {
+        background-size: 37em auto;
+        right: -10em;
+      }
+    }
+
+    @media (min-width: 1400px) {
+      .background-holder {
+        background-image: url('{{ "/img/rina_rainbow.png" | relative_url }}');
+        background-size: auto 1000px;
+        background-position: right top;
+        opacity: unset;
+      }
+    }
+    @media (min-width: 2000px) {
+      .background-holder {
+        background-image: url('{{ "/img/rina_rainbow.png" | relative_url }}');
+        background-size: auto;
+        background-position: right top;
+        opacity: unset;
+      }
+    }
   </style>
 
 </head>
 <body>
   <div class="background-holder"></div>
   
-  <header class="site-header">
+  <header class="site-header" id="site-header">
     <h1>ユニゾン・ゲート<span>～呪われた魔剣と、空から来た観測者～ - ベータ版</span></h1>
     <ul>
       <li>内容の修正で混乱する可能性があるため、通常は<a href="https://ncode.syosetu.com/n0495kv/" onclick="gtag('event', 'click', {'event_category': 'outbound', 'event_label': 'to_narou'});">小説家になろうサイトでの公開版</a>をおすすめします。</li>
@@ -100,6 +124,28 @@
   <main class="novel-container">
     {{ content }}
   </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const header = document.getElementById('site-header');
+      const background = document.querySelector('.background-holder');
+
+      if (!header || !background) {
+        return;
+      }
+
+      const headerHeight = header.offsetHeight;
+      // Set initial position
+      background.style.top = headerHeight + 'px';
+
+      // Update on scroll
+      window.addEventListener('scroll', function() {
+        const scrollY = window.scrollY;
+        const newTop = Math.max(0, headerHeight - scrollY);
+        background.style.top = newTop + 'px';
+      }, { passive: true });
+    });
+  </script>
 
 </body>
 </html>
