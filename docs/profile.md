@@ -15,3 +15,4 @@ layout: default
 *   [ベータ版小説サイト](https://mikakoworld.github.io/unison-gate-beta/)
 *   [Xアカウント](https://x.com/Mimmy_novel)
 *   [Pixiv](https://www.pixiv.net/users/119620745)
+*   [WaveboxでポチッとMimmyを応援](https://wavebox.me/wave/1kxjilaqqlp136ew/)
