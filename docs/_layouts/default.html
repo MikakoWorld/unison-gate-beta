@@ -29,10 +29,19 @@
       background-color: #fdfdfd;
       margin: 0;
       padding: 0;
+    }
+
+    .background-holder {
+      position: fixed;
+      z-index: -1;
+      top: 13.5em; /* ヘッダーの高さ分、表示開始位置をオフセット */
+      left: 0;
+      right: 0;
+      bottom: 0;
       background-image: url('{{ "/img/rina_rainbow.png" | relative_url }}');
       background-repeat: no-repeat;
-      background-attachment: fixed;
-      background-position: right bottom;
+      background-attachment: scroll;
+      background-position: right top;
       background-size: contain;
     }
 
@@ -75,6 +84,7 @@
 
 </head>
 <body>
+  <div class="background-holder"></div>
   
   <header class="site-header">
     <h1>ユニゾン・ゲート<span>～呪われた魔剣と、空から来た観測者～ - ベータ版</span></h1>
