@@ -1,0 +1,25 @@
+---
+permalink: /404.html
+layout: null
+sitemap: false
+---
+
+<!doctype html>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<title>404</title>
+
+<!-- JSで即時リダイレクト（baseurl対応） -->
+<script>
+(function () {
+  var dest = "{{ '/' | relative_url }}";
+  // クリーンに飛ばす：クエリは付けない
+  location.replace(dest);
+})();
+</script>
+
+<!-- JS無効時の保険 -->
+<p>ページが見つからない。<a href="{{ '/' | relative_url }}">トップへ戻る</a></p>
+
+<!-- メタリフレッシュ（さらに保険） -->
+<meta http-equiv="refresh" content="0; url={{ '/' | relative_url }}">
