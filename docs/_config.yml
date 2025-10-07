@@ -1,0 +1,74 @@
+# Jekyll configuration for Unison Gate (beta)
+title: "Unison Gate — ベータ版"
+description: "オリジナル小説『Unison Gate』のベータ版サイト"
+# URL and baseurl are left empty for local builds. For GitHub Pages set url to the site domain
+# and baseurl to the repository name (e.g. "/unison-gate-beta").
+url: ""
+baseurl: ""
+
+# Build settings
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+permalink: "/:path/:basename/"
+markdown: kramdown
+url: "https://mikakoworld.github.io"
+baseurl: "/unison-gate-beta"
+
+# Theme: use minima if no custom theme is provided. The project has custom layouts in the repo,
+# so the theme is primarily used for base styles if desired.
+# theme: minima
+
+# Plugins (none required for local build). If you use jekyll-sitemap or others, add here and
+# enable in Gemfile.
+plugins: []
+
+# Exclude from the build
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - .jekyll-cache
+
+# Defaults: apply layout 'novel' for files under part directories
+defaults:
+  - scope:
+      path: "part00"
+    values:
+      layout: "novel"
+      permalink: /part00/:basename/
+  - scope:
+      path: "part01"
+    values:
+      layout: "novel"
+      permalink: /part01/:basename/
+  - scope:
+      path: "part02"
+    values:
+      layout: "novel"
+      permalink: /part02/:basename/
+
+# Build settings to avoid strict front matter warnings
+safe: false
+lsi: false
+
+# Future/drafts handling (enable if you want to preview drafts)
+future: true
+drafts: false
+
+# Enable incremental build for faster local development (jekyll serve --incremental)
+incremental: true
+
+# Author/site metadata
+author:
+  name: "Mimmy"
+  email: ""
+
+# Navigation - optional helper for templates
+nav:
+  - title: "ホーム"
+    url: "/"
+  - title: "プロフィール"
+    url: "/profile/"
