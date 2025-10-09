@@ -1,0 +1,51 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [ main ]   # PRをmainにマージしたら発火
+  workflow_dispatch:     # 手動デプロイも可
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pages 用のセットアップ
+      - uses: actions/configure-pages@v5
+
+      # Jekyll を docs/ でビルド
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+      - name: Install gems
+        working-directory: docs
+        run: bundle install --path vendor/bundle
+      - name: Build site
+        working-directory: docs
+        run: bundle exec jekyll build --trace
+
+      # 生成物を Pages へ渡す
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/_site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
