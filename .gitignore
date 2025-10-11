@@ -13,4 +13,4 @@ docs/_site/
 1004.txt
 memo/
 docs/_config.local.yml
-docs/.jekyll-metadata
+/docs/.jekyll-metadata
