@@ -1,10 +1,7 @@
 # Jekyll configuration for Unison Gate (beta)
 title: "Unison Gate — ベータ版"
 description: "オリジナル小説『Unison Gate』のベータ版サイト"
-# URL and baseurl are left empty for local builds. For GitHub Pages set url to the site domain
-# and baseurl to the repository name (e.g. "/unison-gate-beta").
-url: ""
-baseurl: ""
+
 
 # Build settings
 markdown: kramdown
@@ -49,6 +46,11 @@ defaults:
     values:
       layout: "novel"
       permalink: /part02/:basename/
+  - scope:
+      path: ""
+      type: "announcements"
+    values:
+      layout: null  # output:false なので実質未使用
 
 # Build settings to avoid strict front matter warnings
 safe: false
@@ -72,3 +74,8 @@ nav:
     url: "/"
   - title: "プロフィール"
     url: "/profile/"
+
+
+collections:
+  announcements:
+    output: false

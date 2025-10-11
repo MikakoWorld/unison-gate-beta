@@ -11,15 +11,11 @@ sitemap: false
 
 <!-- JSで即時リダイレクト（baseurl対応） -->
 <script>
-(function () {
-  var dest = "{{ '/' | relative_url }}";
-  // クリーンに飛ばす：クエリは付けない
-  location.replace(dest);
-})();
+  // replace にして戻るボタンの無限往復を防ぐ
+  setTimeout(function(){ window.location.replace('{{ '/' | relative_url }}'); }, 3000);
 </script>
 
 <!-- JS無効時の保険 -->
 <p>ページが見つからない。<a href="{{ '/' | relative_url }}">トップへ戻る</a></p>
 
-<!-- メタリフレッシュ（さらに保険） -->
-<meta http-equiv="refresh" content="0; url={{ '/' | relative_url }}">
+

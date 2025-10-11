@@ -1,0 +1,165 @@
+{%- comment -%} docs/_includes/announcements.html {%- endcomment -%} {%- if include.css != false -%}
+<style>
+    /* 三角の有無で左余白がズレないよう“同じパディング”を与える */
+  :root {
+    --ann-icon-w: 1.25em;
+    --ann-max-h: clamp(10rem, 21vh, 18rem); /* 加減、理想（パーセント）、上限 */
+    --ann-bg: #fff; /* 背景色。サイトに合わせて変えろ */
+    --ann-fade-h: 1.25rem;   /* フェードの高さ */
+  }
+  .announcements {
+    margin-block: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 0.75rem;
+    max-height: var(--ann-max-h);
+    overflow: auto;                    /* 中だけ縦スクロール */
+    overscroll-behavior: contain;      /* 親までスクロールが抜けるのを防ぐ */
+    scrollbar-gutter: stable both-edges; /* スクロールバーの出現で横ズレしない（対応ブラウザのみ） */
+    -webkit-overflow-scrolling: touch; /* iOS の慣性スクロール */
+    background: var(--ann-bg);
+    position: relative;                /* 下のグラデ用 */
+    z-index: 0;
+  }
+
+    /* 任意：下端に薄いフェードを敷いて「スクロールできる」気配を出す */
+  .announcements::before,
+  .announcements::after{
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    height: var(--ann-fade-h);
+    pointer-events: none;
+    z-index: 1;                /* ← 親(0)より前面。常にテキストの上 */
+    opacity: 0;                /* 既定は非表示。JSで出し入れ */
+    transition: opacity .18s linear;
+  }
+
+  /* 下フェード（初期表示） */
+  .announcements::after{
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), var(--ann-bg));
+  }
+
+  /* 上フェード（下から戻る時の示唆。不要ならこの塊ごと削っていい） */
+  .announcements::before{
+    top: 0;
+    background: linear-gradient(to top, rgba(255,255,255,0), var(--ann-bg));
+  }
+  /* スクロール状態ごとの表示ルール */
+  .announcements.is-scrollable:not(.at-bottom)::after{ opacity: 1; }   /* まだ下がある → 下フェード表示 */
+  .announcements.is-scrolled::before{ opacity: 1; }                     /* もう上がある → 上フェード表示 */
+
+  /* 行間 */
+  .ann {
+    margin: 0.25rem 0;
+  }
+
+  /* summary の既定三角を消しておく（必要なら） */
+  .ann > summary {
+    list-style: none;
+    cursor: pointer;
+  }
+  .ann > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* タイトル強調（spanはinlineなので上下marginは効かない） */
+  .ann .title {
+    font-weight: 700;
+  }
+
+  /* 本文の余白 */
+  .ann .body {
+    margin-top: 0.5rem;
+  }
+
+  /* “本文なし” 行の見た目を整える */
+  .ann.row-only .row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+  }
+
+  /* 行の骨組みを共通化 */
+  .ann > summary,
+  .ann.row-only > .row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+  }
+
+  /* 右端に日付を寄せる */
+  .ann time {
+    margin-left: 0;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+
+  .ann > summary,
+  .ann.row-only > .row {
+    position: relative;
+    padding-left: var(--ann-icon-w);
+  }
+  .ann > summary::-webkit-details-marker {
+    display: none;
+  } /* 既定マーカー殺し */
+  .ann:not(.row-only) > summary::before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+    top: 0.2em;
+    transition: transform 0.2s;
+  }
+  .ann[open] > summary::before {
+    transform: rotate(90deg);
+  }
+  .ann .body {
+    margin-top: 0.5rem;
+    margin-left: var(--ann-icon-w);
+  }
+</style>
+{%- endif -%}
+<div class="ann-wrap">
+  <div class="announcements" role="region" aria-label="お知らせ一覧">
+    {%- assign items = site.announcements | sort: 'date' | reverse -%} {%- for a in items -%} {%-
+    assign has_body = a.content | strip | size -%} {%- if has_body > 0 -%}
+    <details class="ann">
+      <summary>
+        <time datetime="{{ a.date | date_to_xmlschema }}">{{ a.date | date: "%Y-%m-%d" }}</time>
+        <span class="title">{{ a.title }}</span>
+      </summary>
+      <div class="body">{{ a.content | markdownify }}</div>
+    </details>
+    {%- else -%}
+    <div class="ann row-only">
+      <div class="row">
+        <time datetime="{{ a.date | date_to_xmlschema }}">{{ a.date | date: "%Y-%m-%d" }}</time>
+        <span class="title">{{ a.title }}</span>
+      </div>
+    </div>
+    {%- endif -%} {%- endfor -%}
+  </div>
+</div>
+
+<script>
+(() => {
+  const box = document.currentScript.previousElementSibling?.closest('.announcements')
+          || document.currentScript.closest('.announcements');
+  if (!box) return;
+
+  const update = () => {
+    const { scrollTop, scrollHeight, clientHeight } = box;
+    const atTop = scrollTop <= 1;
+    const atBottom = scrollTop + clientHeight >= scrollHeight - 1;
+    box.classList.toggle('is-scrollable', scrollHeight > clientHeight + 1);
+    box.classList.toggle('is-scrolled', !atTop);
+    box.classList.toggle('at-bottom', atBottom);
+  };
+
+  update();
+  box.addEventListener('scroll', update, { passive: true });
+  new ResizeObserver(update).observe(box); // 中身の増減にも追従
+})();
+</script>

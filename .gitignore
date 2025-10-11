@@ -14,3 +14,7 @@ docs/_site/
 memo/
 docs/_config.local.yml
 /docs/.jekyll-metadata
+.markdownlint.json
+.editorconfig
+.prettierrc
+docs/settings.json
