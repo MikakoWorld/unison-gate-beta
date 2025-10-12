@@ -1,54 +1,61 @@
 {%- comment -%} docs/_includes/announcements.html {%- endcomment -%} {%- if include.css != false -%}
 <style>
-    /* 三角の有無で左余白がズレないよう“同じパディング”を与える */
+  /* 三角の有無で左余白がズレないよう“同じパディング”を与える */
   :root {
     --ann-icon-w: 1.25em;
     --ann-max-h: clamp(10rem, 21vh, 18rem); /* 加減、理想（パーセント）、上限 */
     --ann-bg: #fff; /* 背景色。サイトに合わせて変えろ */
-    --ann-fade-h: 1.25rem;   /* フェードの高さ */
+    --ann-fade-h: 1.25rem; /* フェードの高さ */
   }
   .announcements {
-    margin-block: 1rem;
+    margin-block: 0;  
     padding: 0.75rem 1rem;
     border: 1px solid #ddd;
     border-radius: 0.75rem;
     max-height: var(--ann-max-h);
-    overflow: auto;                    /* 中だけ縦スクロール */
-    overscroll-behavior: contain;      /* 親までスクロールが抜けるのを防ぐ */
-    scrollbar-gutter: stable both-edges; /* スクロールバーの出現で横ズレしない（対応ブラウザのみ） */
-    -webkit-overflow-scrolling: touch; /* iOS の慣性スクロール */
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable both-edges;
+    -webkit-overflow-scrolling: touch;
     background: var(--ann-bg);
-    position: relative;                /* 下のグラデ用 */
+  }
+  /* フェード用ラッパー（外側・固定） */
+  .ann-wrap {
+    position: relative; /* フェードの基準 */
+    isolation: isolate; /* 積層を独立（安全策） */
     z-index: 0;
+    margin-block: 1rem; 
   }
 
-    /* 任意：下端に薄いフェードを敷いて「スクロールできる」気配を出す */
-  .announcements::before,
-  .announcements::after{
-    content: "";
-    position: absolute;
-    left: 0; right: 0;
-    height: var(--ann-fade-h);
-    pointer-events: none;
-    z-index: 1;                /* ← 親(0)より前面。常にテキストの上 */
-    opacity: 0;                /* 既定は非表示。JSで出し入れ */
-    transition: opacity .18s linear;
-  }
-
-  /* 下フェード（初期表示） */
-  .announcements::after{
-    bottom: 0;
-    background: linear-gradient(to bottom, rgba(255,255,255,0), var(--ann-bg));
-  }
-
-  /* 上フェード（下から戻る時の示唆。不要ならこの塊ごと削っていい） */
-  .announcements::before{
+ /* フェードは “外側” の .ann-wrap にのみ付ける（これが本体） */
+ .ann-wrap::before,
+ .ann-wrap::after{
+   content:"";
+   position:absolute; left:0; right:0;
+   height:var(--ann-fade-h);
+   pointer-events:none;
+   z-index:1;
+   opacity:0;
+   transition:opacity .18s linear;
+ }
+  /* 上フェード */
+  .ann-wrap::before {
     top: 0;
-    background: linear-gradient(to top, rgba(255,255,255,0), var(--ann-bg));
+    background: linear-gradient(to top, rgba(255, 255, 255, 0), var(--ann-bg));
   }
-  /* スクロール状態ごとの表示ルール */
-  .announcements.is-scrollable:not(.at-bottom)::after{ opacity: 1; }   /* まだ下がある → 下フェード表示 */
-  .announcements.is-scrolled::before{ opacity: 1; }                     /* もう上がある → 上フェード表示 */
+  /* 下フェード */
+  .ann-wrap::after {
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--ann-bg));
+  }
+
+  /* 表示ルール（クラスはラッパー側に付く） */
+  .ann-wrap.is-scrollable:not(.at-bottom)::after {
+    opacity: 1;
+  }
+  .ann-wrap.is-scrolled::before {
+    opacity: 1;
+  }
 
   /* 行間 */
   .ann {
@@ -95,7 +102,6 @@
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
   }
-
 
   .ann > summary,
   .ann.row-only > .row {
@@ -144,22 +150,29 @@
 </div>
 
 <script>
-(() => {
-  const box = document.currentScript.previousElementSibling?.closest('.announcements')
-          || document.currentScript.closest('.announcements');
-  if (!box) return;
+  (() => {
+    const wrap =
+      document.currentScript.previousElementSibling?.closest(".ann-wrap") ||
+      document.currentScript.closest(".ann-wrap");
+    if (!wrap) return;
+    const box = wrap.querySelector(".announcements");
+    if (!box) return;
 
-  const update = () => {
-    const { scrollTop, scrollHeight, clientHeight } = box;
-    const atTop = scrollTop <= 1;
-    const atBottom = scrollTop + clientHeight >= scrollHeight - 1;
-    box.classList.toggle('is-scrollable', scrollHeight > clientHeight + 1);
-    box.classList.toggle('is-scrolled', !atTop);
-    box.classList.toggle('at-bottom', atBottom);
-  };
+    const update = () => {
+      const { scrollTop, scrollHeight, clientHeight } = box;
+      const atTop = scrollTop <= 1;
+      const atBottom = scrollTop + clientHeight >= scrollHeight - 1;
+      wrap.classList.toggle("is-scrollable", scrollHeight > clientHeight + 1);
+      wrap.classList.toggle("is-scrolled", !atTop);
+      wrap.classList.toggle("at-bottom", atBottom);
+    };
 
-  update();
-  box.addEventListener('scroll', update, { passive: true });
-  new ResizeObserver(update).observe(box); // 中身の増減にも追従
-})();
+    update();
+    (window.requestAnimationFrame || setTimeout)(update, 0);
+    window.addEventListener("load", update, { once: true });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(update);
+
+    box.addEventListener("scroll", update, { passive: true });
+    if ("ResizeObserver" in window) new ResizeObserver(update).observe(box);
+  })();
 </script>
