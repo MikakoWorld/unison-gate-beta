@@ -1,0 +1,36 @@
+{%- comment -%}
+  usage: {% include illustration.html position="start" %}
+  data key: site.data.illustrations[base]
+  画像は _data 経由が最優先。なければ命名規則のファイルを自動探索。
+{%- endcomment -%}
+{%- assign base = page.name | split: '.' | first -%}
+{%- assign d = site.data.illustrations[base] -%}
+
+{%- if d -%}
+  {%- assign path = d[position] -%}
+{%- endif -%}
+
+{%- if path == nil or path == "" -%}
+  {%- assign path = "/img/illust/" | append: base | append: "-" | append: position | append: ".webp" -%}
+{%- endif -%}
+
+{%- assign file = site.static_files | where: "path", path | first -%}
+{%- if file -%}
+  {%- assign alt_key = position | append: "_alt" -%}
+  {%- assign cap_key = position | append: "_caption" -%}
+  {%- assign w_key = position | append: "_width" -%}
+  {%- assign h_key = position | append: "_height" -%}
+  <figure class="illust illust-{{ position }}">
+    <img
+      src="{{ path | relative_url }}"
+      alt="{{ d[alt_key] | default: page.title }}"
+      {% if d and d[w_key] %}width="{{ d[w_key] }}"{% endif %}
+      {% if d and d[h_key] %}height="{{ d[h_key] }}"{% endif %}
+      loading="{% if position == 'start' %}eager{% else %}lazy{% endif %}"
+      fetchpriority="{% if position == 'start' %}high{% else %}auto{% endif %}"
+      decoding="async">
+    {%- if d and d[cap_key] -%}
+      <figcaption>{{ d[cap_key] }}</figcaption>
+    {%- endif -%}
+  </figure>
+{%- endif -%}

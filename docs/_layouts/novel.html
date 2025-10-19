@@ -115,6 +115,11 @@
         opacity: unset;
       }
     }
+
+    .illust img{max-width:100%; height:auto;}
+    .illust-start{margin-top:.5rem;}
+    .illust-end{margin-bottom:2rem;}
+    .illust{margin:1.25rem auto; text-align:center;}
   </style>
 
 </head>
@@ -133,7 +138,9 @@
 
   <main class="novel-container">
     <h2>{{ page.title | default: num | append: '話 ' | append: title_tail }}</h2>
+    {% include illustration.html position="start" %}
     {{ content }}
+    {% include illustration.html position="end" %}
   </main>
 
   <script>
