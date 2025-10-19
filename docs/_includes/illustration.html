@@ -1,36 +1,53 @@
-{%- comment -%}
-  usage: {% include illustration.html position="start" %}
-  data key: site.data.illustrations[base]
-  画像は _data 経由が最優先。なければ命名規則のファイルを自動探索。
-{%- endcomment -%}
+{%- comment -%} usage: {% include illustration.html position="start" %} {%- endcomment -%}
 {%- assign base = page.name | split: '.' | first -%}
 {%- assign d = site.data.illustrations[base] -%}
+{%- assign pos = include.position | default: "start" -%}
 
-{%- if d -%}
-  {%- assign path = d[position] -%}
+{%- assign path = "" -%}
+{%- if d and d[pos] %}{%- assign path = d[pos] -%}{%- endif -%}
+{%- if path == "" -%}
+  {%- assign path = "/img/illust/" | append: base | append: "-" | append: pos | append: ".webp" -%}
 {%- endif -%}
 
-{%- if path == nil or path == "" -%}
-  {%- assign path = "/img/illust/" | append: base | append: "-" | append: position | append: ".webp" -%}
-{%- endif -%}
+{%- comment -%} static_files 存在チェック（環境差に合わせて両方） {%- endcomment -%}
+{%- assign file = site.static_files | where: "relative_path", path | first -%}
+{%- if file == nil -%}{%- assign file = site.static_files | where: "path", path | first -%}{%- endif -%}
 
-{%- assign file = site.static_files | where: "path", path | first -%}
-{%- if file -%}
-  {%- assign alt_key = position | append: "_alt" -%}
-  {%- assign cap_key = position | append: "_caption" -%}
-  {%- assign w_key = position | append: "_width" -%}
-  {%- assign h_key = position | append: "_height" -%}
-  <figure class="illust illust-{{ position }}">
+{%- assign alt_key = pos | append: "_alt" -%}
+{%- assign cap_key = pos | append: "_caption" -%}
+{%- assign w_key = pos | append: "_width" -%}
+{%- assign h_key = pos | append: "_height" -%}
+
+{%- comment -%}
+  WebP があれば <picture> で優先。YAML が PNG/JPG を指す場合でも、
+  同名の .webp が存在すれば自動で使う。
+{%- endcomment -%}
+{%- assign webp_candidate = path | replace: ".png", ".webp" | replace: ".jpg", ".webp" | replace: ".jpeg", ".webp" -%}
+{%- assign has_webp = site.static_files | where: "relative_path", webp_candidate | first -%}
+{%- if has_webp == nil -%}{%- assign has_webp = site.static_files | where: "path", webp_candidate | first -%}{%- endif -%}
+
+<figure class="illust illust-{{ pos }}{% if file == nil %} illust-unverified{% endif %}">
+  {%- if has_webp -%}
+    <picture>
+      <source type="image/webp" srcset="{{ webp_candidate | relative_url }}">
+      <img
+        src="{{ path | relative_url }}"
+        alt="{{ d[alt_key] | default: page.title }}"
+        {% if d and d[w_key] %}width="{{ d[w_key] }}"{% endif %}
+        {% if d and d[h_key] %}height="{{ d[h_key] }}"{% endif %}
+        loading="{% if pos == 'start' %}eager{% else %}lazy{% endif %}"
+        fetchpriority="{% if pos == 'start' %}high{% else %}auto{% endif %}"
+        decoding="async">
+    </picture>
+  {%- else -%}
     <img
       src="{{ path | relative_url }}"
       alt="{{ d[alt_key] | default: page.title }}"
       {% if d and d[w_key] %}width="{{ d[w_key] }}"{% endif %}
       {% if d and d[h_key] %}height="{{ d[h_key] }}"{% endif %}
-      loading="{% if position == 'start' %}eager{% else %}lazy{% endif %}"
-      fetchpriority="{% if position == 'start' %}high{% else %}auto{% endif %}"
+      loading="{% if pos == 'start' %}eager{% else %}lazy{% endif %}"
+      fetchpriority="{% if pos == 'start' %}high{% else %}auto{% endif %}"
       decoding="async">
-    {%- if d and d[cap_key] -%}
-      <figcaption>{{ d[cap_key] }}</figcaption>
-    {%- endif -%}
-  </figure>
-{%- endif -%}
+  {%- endif -%}
+  {%- if d and d[cap_key] -%}<figcaption>{{ d[cap_key] }}</figcaption>{%- endif -%}
+</figure>

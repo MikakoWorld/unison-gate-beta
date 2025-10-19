@@ -139,7 +139,9 @@
   <main class="novel-container">
     <h2>{{ page.title | default: num | append: '話 ' | append: title_tail }}</h2>
     {% include illustration.html position="start" %}
+
     {{ content }}
+    
     {% include illustration.html position="end" %}
   </main>
 

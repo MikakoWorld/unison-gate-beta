@@ -1,7 +1,5 @@
+"00_プロローグ":
 "25_塔の番人":
-  start: "/img/illust/25.png"
-  start_alt: "alt"
-  start_caption: "caption"
-  # end: ""
-  # end_alt: ""
-  # end_caption: ""
+  start: "/img/illust/25.webp"
+  start_alt: "第25話 挿絵"
+  start_width: 1201
