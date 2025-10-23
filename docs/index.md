@@ -25,7 +25,7 @@ layout: default
 - [2. 旅立ち]({{ '/part01/02_旅立ち' | relative_url }})
 - [3. 静寂の海]({{ '/part01/03_静寂の海' | relative_url }})
 - [4. 転移と新天地]({{ '/part01/04_転移と新天地' | relative_url }})
-- [5. 魔法使いの目覚め]({{ '/part01/05_魔法使いの目覚め' | relative_url }})
+- [5. 魔法使いの目覚め]({{ '/part01/05_魔法使いの目覚め' | relative_url }})(25.10.24 修正)
 - [6. 魔神の目覚め]({{ '/part01/06_魔神の目覚め' | relative_url }})
 - [7. 砂塵と星屑の夜番]({{ '/part01/07_砂塵と星屑の夜番' | relative_url }})
 - [8. 観測者は砂塵に舞う]({{ '/part01/08_観測者は砂塵に舞う' | relative_url }})
